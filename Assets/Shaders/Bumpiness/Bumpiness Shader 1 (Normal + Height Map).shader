@@ -1,0 +1,52 @@
+Shader "Bumpiness/Bumpiness Shader 1 (Normal + Height Map)"
+{
+    Properties
+    {
+        _MainTex ("Texture", 2D) = "white" {}
+        [NoScaleOffset] _NormalMap ("Normal Map", 2D) = "bump" {}
+        [NoScaleOffset] _HeightMap ("Height Map", 2D) = "gray" {}
+        _Color ("Color", Color) = (1, 1, 1, 1)
+        [Gamma] _Metallic ("Metallic", Range(0, 1)) = 0
+        _Smoothness ("Smoothness", Range(0, 1)) = 0.1
+        _NormalIntensity ("Normal Intensity", Range(0, 1)) = 0.5
+        _HeightStrength ("Height Strength", Range(0, 0.2)) = 0
+    }
+    SubShader
+    {
+        Tags { "RenderType"="Opaque" }
+
+        Pass
+        {
+            Tags { "LightMode"="ForwardBase" }
+            CGPROGRAM
+            
+            #pragma target 3.0
+            #pragma vertex vert
+            #pragma fragment frag
+
+            #include "NormalHeightMapLighting.cginc"
+            
+            ENDCG
+        }
+
+        Pass
+        {
+            Tags { "LightMode"="ForwardAdd" }
+            
+            Blend One One
+            ZWrite Off
+            
+            CGPROGRAM
+            
+            #pragma target 3.0
+            #pragma multi_compile_fwdadd
+            
+            #pragma vertex vert
+            #pragma fragment frag
+            
+            #include "NormalHeightMapLighting.cginc"
+            
+            ENDCG
+        }
+    }
+}
